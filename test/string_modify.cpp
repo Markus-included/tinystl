@@ -1,5 +1,5 @@
 /*-
- * Copyright 2012-2018 Matthew Endsley
+ * Copyright 2012-2015 Matthew Endsley
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,36 +26,46 @@
 
 #include <TINYSTL/string.h>
 #include <UnitTest++.h>
-#include <string.h>
 
-TEST(test_reserve) {
+TEST(test_append) {
 	tinystl::string s;
-	s.reserve(0);
-	CHECK(s.capacity() == 15);
-	s.reserve(10);
-	s = "short";
-	CHECK(s.capacity() == 15);
-	CHECK(s == "short");
-	s.reserve(15);
-	CHECK(s.capacity() == 15);
-	CHECK(s == "short");
-	s.reserve(100);
-	CHECK(s.capacity() == 100);
-	CHECK(s == "short");
-	s.reserve(101);
-	CHECK(s.capacity() == 101);
-	CHECK(s == "short");
+	s += "hello";
+	s += ' ';
+	s += "world";
+	CHECK(s == "hello world");
+	s += " and this is a very long string";
+	CHECK(s == "hello world and this is a very long string");
 }
 
-TEST(test_resize) {
-	tinystl::string s;
-	s.resize(1, ' ');
-	CHECK(s == " ");
-	s.resize(16, '+');
-	CHECK(s == " +++++++++++++++");
-	s.clear();
-	s.resize(16, '@');
-	CHECK(s == "@@@@@@@@@@@@@@@@");
-	s.resize(12, '-');
-	CHECK(s == "@@@@@@@@@@@@");
+TEST(test_add) {
+	CHECK(tinystl::string("hello") + tinystl::string(" world") == "hello world");
+	CHECK(tinystl::string("hello") + " world" == "hello world");
+	CHECK(tinystl::string("hello") + " " + "world" == "hello world");
+	CHECK("hello" + tinystl::string(" ") + "world" == "hello world");
+}
+
+TEST(test_insert) {
+	tinystl::string s("world");
+	s.insert(s.end(), '!');
+	CHECK(s == "world!");
+	s.insert(s.begin(), "hello");
+	CHECK(s == "helloworld!");
+	s.insert(s.begin() + 5, " ");
+	CHECK(s == "hello world!");
+	s.insert(s.end() - 1, ", prepend a huge string to check");
+	CHECK(s == "hello world, prepend a huge string to check!");
+}
+
+TEST(test_erase) {
+	tinystl::string s("hello");
+	s.erase(s.begin(), s.end());
+	CHECK(s.empty());
+	s = "hello";
+	s.erase(s.end() - 1, s.end());
+	CHECK(s == "hell");
+	s = "hello world and this is a very long string";
+	s.erase(s.begin(), s.begin() + 4);
+	CHECK(s == "o world and this is a very long string");
+	s.erase(s.begin(), s.end());
+	CHECK(s.empty());
 }
