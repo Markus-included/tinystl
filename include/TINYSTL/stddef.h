@@ -36,6 +36,15 @@
 #elif defined (__linux__) && defined(__SIZE_TYPE__) && defined(__PTRDIFF_TYPE__)
 	typedef __SIZE_TYPE__ size_t;
 	typedef __PTRDIFF_TYPE__ ptrdiff_t;
+#elif defined(__cplusplus) && (__cplusplus >= 201103L)
+	// The standard defines `size_t` as the result of a `sizeof` expression,
+	// this means this fully conforms to the standard
+	typedef decltype(sizeof(void*)) size_t;
+
+	// The standard defines `ptrdiff_t` as resulting type of subtracting two pointers
+	// (I don't know if this works as I never encountered a usecase for ptrdiff_t, 
+	// GCC seems to printing no warnings when I assign negative values, which it usually does in such a case)
+	typedef decltype((int*)0 - (int*)1) ptrdiff_t;
 #else
 #	include <stddef.h>
 #endif
